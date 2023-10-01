@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Процедурная векторная анимация</title>
+    <style>
+        /* Стиль границы */
+        #canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="400" height="400"></canvas>
+
+    <script>
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+
+        // Расположение на координате
+        var x = canvas.width / 2; // начальные координаты мяча
+        var y = canvas.height / 2;
+        var radius = 20; // радиус мяча
+        var dx = 2; // изменение координат по оси x
+        var dy = -2; // изменение координат по оси y
+
+        // Формат мяча
+        function drawBall() {
+            context.clearRect(0, 0, canvas.width, canvas.height);
+            context.beginPath();
+            context.arc(x, y, radius, 0, Math.PI * 2);
+            context.fillStyle = "#0095DD";
+            context.fill();
+            context.closePath();
+        }
+
+        // Функция перемещения
+        function updateBallPosition() {
+            x += dx;
+            y += dy;
+
+            if (x + dx > canvas.width - radius || x + dx < radius) {
+                dx = -dx;
+            }
+
+            if (y + dy > canvas.height - radius || y + dy < radius) {
+                dy = -dy;
+            }
+        }
+
+        // Функция animate() вызывает drawBall(), updateBallPosition() и 
+        // с помощью метода requestAnimationFrame(), чтобы создать плавную анимацию.
+        function animate() {
+            drawBall();
+            updateBallPosition();
+            requestAnimationFrame(animate);
+        }
+
+        animate();
+    </script>
+</body>
+</html>
