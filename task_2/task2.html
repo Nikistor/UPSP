@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Процедурная векторная анимация</title>
+    <style>
+        /* Стиль границы */
+        #canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="canvas" width="800" height="400"></canvas>
+
+    <script>
+        var canvas = document.getElementById("canvas");
+        var context = canvas.getContext("2d");
+
+        // Расположение на координате
+        var x = canvas.width / 2; // начальные координаты мяча
+        var y = canvas.height / 2;
+        var radius = 40; // радиус мяча
+        var dx = 2; // изменение координат по оси x
+        var dy = -2; // изменение координат по оси y
+        var ballColor = "#dd4800"; // цвет мяча
+
+        // Функция рисует мяч на холсте
+        function drawBall() {
+            context.clearRect(0, 0, canvas.width, canvas.height); // Стирание пути
+            context.beginPath(); 
+            context.arc(x, y, radius, 0, Math.PI * 2); // Создание мяча
+            context.fillStyle = ballColor;
+            context.fill(); // Заливка фигуры
+            context.closePath();
+        }
+
+        // Функция перемещения и проверки столкновений
+        function updateBallPosition() {
+            x += dx;
+            y += dy;
+            
+            // Проверка столкновения мяча с границами по оси X (горизонтально)
+            if (x + dx > canvas.width - radius || x + dx < radius) {
+                dx = -dx;
+                changeBallColor(); // Изменение цвета мяча при ударе о границу
+            }
+            
+            // Проверка столкновения мяча с границами по оси Y (вертикально)
+            if (y + dy > canvas.height - radius || y + dy < radius) {
+                dy = -dy;
+                changeBallColor(); // Изменение цвета мяча при ударе о границу
+            }
+        }
+
+        // Функция изменения цвета мяча
+        function changeBallColor() {
+            // Генерация случайного цвета в формате RGB
+            var r = Math.floor(Math.random() * 256);
+            var g = Math.floor(Math.random() * 256);
+            var b = Math.floor(Math.random() * 256);
+            
+            // Присвоение нового цвета мячу
+            ballColor = "rgb(" + r + ", " + g + ", " + b + ")";
+        }
+
+        // Функция анимации
+        function animate() {
+            drawBall();
+            updateBallPosition();
+            requestAnimationFrame(animate); // метод для создания плавной анимации
+        }
+
+        // Вызов функции анимации
+        animate();
+    </script>
+</body>
+</html>
