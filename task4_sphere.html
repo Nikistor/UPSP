@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Процедурная векторная анимация</title>
+    <style>
+        /* Стиль границы */
+        #canvas {
+            border: 1px solid rgb(252, 0, 0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Подключаем библиотеку Three.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+    <!-- Создаем холст для рендера трехмерной сцены -->
+    <canvas id="canvas" width="800" height="400"></canvas>
+
+    <!-- Кнопка для ускорения движения сферы -->
+    <button onclick="accelerateBall();">Ускорить сферу</button>
+
+    <script>
+        // Создание сцены, камеры и рендерера Three.js
+        var scene = new THREE.Scene();
+        var camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 100);
+        var renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('canvas') });
+
+        // Создание геометрии сферы
+        var geometry = new THREE.SphereGeometry(20, 32, 32);
+
+        // Создание материала для сферы (цвет и каркас(меридианы и параллели))
+        var material = new THREE.MeshBasicMaterial({ color: 0xdd4800, wireframe: true });
+
+        // Создание сферы и добавление ее в сцену
+        var sphere = new THREE.Mesh(geometry, material);
+        scene.add(sphere);
+
+        // Начальное положение камеры
+        camera.position.z = 120;
+
+        // Начальные значения для ускорения движения сферы
+        var speedMultiplier = 1;
+        var sphereSpeedX = 2;
+        var sphereSpeedY = -2;
+
+        // Коэффициент масштабирования
+        var kx = 1.05;
+
+        // Флаг для отслеживания состояния сферы
+        var isSphereIncreasing = true;
+
+        // Функция перемещения с изменением размера и цвета сферы
+        function updateSphere() {
+            // Изменяем координаты сферы в соответствии с ее скоростью и множителем скорости
+            sphere.position.x += sphereSpeedX * speedMultiplier;
+            sphere.position.y += sphereSpeedY * speedMultiplier;
+
+            // Условия для отскакивания от границ холста
+            if (sphere.position.x + sphereSpeedX > 120 || sphere.position.x + sphereSpeedX < -120) {
+                sphereSpeedX = -sphereSpeedX;
+                changeSphereColor(); // Изменение цвета сферы при ударе о границу
+                updateSphereSize(); // Изменение размера сферы при ударе о границу
+            }
+
+            if (sphere.position.y + sphereSpeedY > 55 || sphere.position.y + sphereSpeedY < -55) {
+                sphereSpeedY = -sphereSpeedY;
+                changeSphereColor(); // Изменение цвета сферы при ударе о границу
+                updateSphereSize(); // Изменение размера сферы при ударе о границу
+            }
+        }
+
+        // Функция изменения цвета сферы
+        function changeSphereColor() {
+            var randomColor = Math.random() * 0xffffff; // Генерация случайного цвета
+            sphere.material.color.setHex(randomColor);
+        }
+
+        // Функция изменения размера сферы (Масштабирование)
+        function updateSphereSize() {
+            // Изменение размера сферы при ударе
+            if (isSphereIncreasing) {
+                sphere.scale.x *= kx;
+                sphere.scale.y *= kx;
+                sphere.scale.z *= kx;
+
+                // Проверка размера сферы после увеличения
+                if (sphere.scale.x >= 2) {
+                    isSphereIncreasing = false; // Уменьшение коэффициента
+                }
+            } else {
+                // Уменьшение коэффициента
+                if (sphere.scale.x <= 1.2) {
+                    isSphereIncreasing = true; // Восстановление увеличения
+                } else {
+                    // Уменьшение размера сферы (обратное масштабирование)
+                    sphere.scale.x /= kx;
+                    sphere.scale.y /= kx;
+                    sphere.scale.z /= kx;
+                }
+            }
+        }
+
+		// Функция скорости перемещения шарика
+		function accelerateBall() {
+            speedMultiplier *= 1.5; // Увеличиваем скорость
+        }
+
+        // Функция анимации
+        function animate() {
+            requestAnimationFrame(animate);
+
+            // Вращаем сферу
+            sphere.rotation.x += 0.01 * speedMultiplier;
+            sphere.rotation.y += 0.01 * speedMultiplier;
+
+            // Обновляем положение и размер сферы
+            updateSphere();
+
+            // Рендерим сцену
+            renderer.render(scene, camera);
+        }
+
+        // Вызываем функцию анимации
+        animate();
+    </script>
+</body>
+</html>
