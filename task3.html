@@ -26,7 +26,6 @@
 
         // Коэффициенты масштабирования
         var kx = 1.05;
-        var ky = 1.05;
 
         // Флаг для отслеживания состояния мяча
         var isBallIncreasing = true;
@@ -79,10 +78,8 @@
             // Изменение размера мяча
             if (isBallIncreasing) {
                 radius = kx * radius;
-                ky = kx; // Присвоение ky того же значения, что и kx
             } else {
                 radius = 1 / kx * radius;
-                ky = 1 / kx;
             }
 
             // Проверка размера мяча после увеличения
